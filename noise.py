@@ -1,12 +1,7 @@
-package main
-
-#TODO: proper packages
-import "fmt"
-
 def main():
-    fmt.Println("MAKE SOME NOISE")
+    print("MAKE SOME NOISE")
 
-    fmt.Println("Preparing track")
+    print("Preparing track")
     signal = example_harmonicsTuning(22.5, 10)
 
     nbsecs = 20

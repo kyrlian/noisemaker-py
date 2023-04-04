@@ -4,11 +4,7 @@
 import math
 import time
 import sys
-import pyaudio # pip install pyaudio
 
-# https://stackoverflow.com/questions/974071/python-library-for-playing-fixed-frequency-sound
-# https://pypi.org/project/PyAudio/
-# https://realpython.com/playing-and-recording-sound-python/#comparison-of-audio-libraries
 
 class TrackStreamer:
     #Beep Streamer struct
