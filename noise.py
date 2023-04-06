@@ -1,10 +1,15 @@
-def main():
-    print("MAKE SOME NOISE")
+#!python3
 
-    print("Preparing track")
-    signal = example_harmonicsTuning(22.5, 10)
+from player import Player
+from signal_track import Track, TrackElement
+from signal_oscillator import Oscillator
+from const import Const
+from signal_timedFloat import TimedFloat
 
-    nbsecs = 20
-    plotsignal(signal, signal.name, nbsecs, 44100/10) #plot track for 30 seconds
-    saveToWav(signal, signal.name, nbsecs)            #save to wave file
-    runSampler(signal, nbsecs)                        #play on speakers
+print("MAKE SOME NOISE")
+print("Preparing track")
+
+o440 = Oscillator(Const.SIN, 440.0)
+mytrack = Track([TrackElement(o440)], 0, 10, .1)
+p = Player()
+p.play(mytrack)

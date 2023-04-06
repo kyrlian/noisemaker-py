@@ -1,3 +1,6 @@
+from signal_modifiers import Amplifier
+from signal_timedFloat import toTimedFloat
+
 class SoundSignal:
     # anything that gives a val for a time - both oscillator and track are signals
     # Audio signal is expected -1 to 1
@@ -7,3 +10,6 @@ class SoundSignal:
     def getval(self,t):
         pass
 
+    def amplify(self,f):
+        if self.ampl is not None:
+            self.ampl = Amplifier(self.ampl,f)

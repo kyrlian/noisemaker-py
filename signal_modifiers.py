@@ -1,5 +1,6 @@
 import math
 from soundsignal import SoundSignal
+from signal_timedFloat import TimedFloat, toTimedFloat
 
 class Filter(SoundSignal):
     def __init__(self, low, high):
@@ -41,11 +42,11 @@ class Power(SoundSignal):
         return math.pow(self.base, self.input.getval(t))
 
 
-class Amplify(SoundSignal):
+class Amplifier(SoundSignal):
     # - use native methods when possible to keep the type
-    def __init__(self, input, factor=2):
+    def __init__(self, input, factor):
         self.input = input
-        self.factor = factor
+        self.factor = toTimedFloat(factor)
 
     def getval(self, t):
         return self.input.getval(t) * self.factor.getval(t)
