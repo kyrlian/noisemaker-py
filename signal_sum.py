@@ -5,7 +5,10 @@ from signal_timedFloat import toTimedFloat
 class SignalSum(SoundSignal):
     # SignalSum is a collection of signals
 
-    def __init__(self, elements=[], ampl=1, name=""):
+    def __init__(self, elements=None, ampl=1, name=""):
+        # using elements=[] in the declaration gave weird result when initializing with SignalSum(name="that") : I had the elements of the previous SignalSum declaration !
+        if elements is None:
+            elements=[]
         self.elements = elements
         self.ampl = toTimedFloat(ampl)
         self.name = name
