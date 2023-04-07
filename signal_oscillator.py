@@ -4,30 +4,38 @@ import numpy
 from random import random
 from signal_timedFloat import TimedFloat, toTimedFloat
 
+
 class Oscillator(SoundSignal):
 
-    def __init__(self, shape=Const.SIN, freq: SoundSignal = 440, phase: SoundSignal = None, ampl: SoundSignal = .1, width: SoundSignal = None, name=""):
+    def __init__(self, shape=Const.SIN, freq: SoundSignal = 440, phase: SoundSignal = 0, ampl: SoundSignal = .1, width=.5, name=""):
         self.shape = shape
+        assert freq is not 0
         self.freq = toTimedFloat(freq)
         self.phase = toTimedFloat(phase)
         self.ampl = toTimedFloat(ampl)
-        self.width = toTimedFloat(width)  # optional, to set the width of the top of the PULSE shape
+        # optional, to set the width of the top of the PULSE shape
+        self.width = toTimedFloat(width)
+        if name == "":
+            name = f"{shape}-{freq}"
         self.name = name
 
-    def setname(self, s):
-        self.name = s
+    def __str__(self):
+        return f"Oscillator {self.name} {self.shape} {self.freq.base}"
+
+    def setname(self, str):
+        self.name = str
         return self
 
-    def set(self, elem, s:SoundSignal):
+    def set(self, elem, s: SoundSignal):
         match elem:
             case Const.FREQ:
-                self.freq = s
+                self.freq = toTimedFloat(s)
             case Const.PHASE:
-                self.phase = s
+                self.phase = toTimedFloat(s)
             case Const.AMPL:
-                self.ampl = s
+                self.ampl = toTimedFloat(s)
             case Const.WIDTH:
-                self.width = s
+                self.width = toTimedFloat(s)
             case other:
                 print("WARNING: Oscillator.set:unkown element:%v\n" % elem)
         return self
@@ -48,30 +56,28 @@ class Oscillator(SoundSignal):
             case Const.FLAT:
                 y = 1.0
             case Const.SQR:
-                if xmod < .5:
-                    y = 1.0
-                else:
-                    y = -1.0
+                y = (xmod < .5) * 2 - 1
             case Const.PULSE:
                 # with width=.5 it's just a square
-                if xmod < self.width.getval(t):
-                    y = 1.0
-                else:
-                    y = -1.0
+                # gives 1 if test is True, -1 if False
+                y = (xmod < self.width.getval(t)) * 2 - 1  
             case Const.SAW:  # ramp up
                 y = -1.0 + 2*xmod
             case Const.ISAW:  # ramp down
                 y = 1.0 - 2*xmod
             case Const.TRI:  # ramp up and down
-                if xmod < .5:
-                    y = -1.0 + 4.0*xmod
-                else:
-                    y = 3.0 - 4.0*xmod
+                # m is -1/+1
+                m = (xmod < .5) * 2 - 1 
+                y = 1 - 2 * m + m * 4 * xmod
+                #if xmod < .5:
+                #    y = -1.0 + 4.0 * xmod
+                #else:
+                #    y = 3.0 - 4.0 * xmod
             case Const.NOISE:
-                y = 2.0*random.random() - 1.0  # rand is [0.0,1.0)
+                y = 2.0 * random() - 1.0  # rand is [0.0,1.0)
                 # if self.customshape is not None:
                 #    y = getcustomshapeval(self.customshape, xmod, t)
             case other:
                 print(
                     f"WARNING: Oscillator.getval:unkown shape:{self.shape}\n")
-        return y * self.ampl.getval(t)  # can be negative - ex for LFOs
+        return y * self.ampl.getval(t)  # can be negative - ex: LFOs

@@ -1,4 +1,3 @@
-import math
 from  matplotlib import pyplot
 import numpy
 

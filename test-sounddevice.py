@@ -1,8 +1,7 @@
 #!python3
 
-# https://stackoverflow.com/questions/974071/python-library-for-playing-fixed-frequency-sound
-# https://pypi.org/project/PyAudio/
 # https://realpython.com/playing-and-recording-sound-python/#comparison-of-audio-libraries
+# https://python-sounddevice.readthedocs.io/en/latest/
 
 # python3 -m pip install sounddevice
 # python3 -m pip install numpy

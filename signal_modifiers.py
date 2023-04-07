@@ -16,7 +16,6 @@ class Filter(SoundSignal):
             v = self.high
         return v
 
-
 class Inverter(SoundSignal):
     # takes an input signal and gives 1/signal(t)
     def __init__(self, input):
@@ -54,4 +53,4 @@ class Amplifier(SoundSignal):
 
 #    TODO
 #   shift(delay) - return signal(t-delay)
-#  echo(delay,factor) - return signal(t)+signal.shift(delay).amplify(factor)
+#  echo(delay,factor) - return signal(t)+signal.shift(delay).set(Const.AMPL,factor)

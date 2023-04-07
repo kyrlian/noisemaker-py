@@ -1,21 +1,24 @@
-from random import random
 from signal_oscillator import Oscillator
-from signal_track import Track
+from signal_track import Track, TrackElement
 from const import Const
 from signal_timedFloat import TimedFloat
-from signal_customshape import customShape_xy, customShape_yd, timedPairList_yd, CustomShape
+from signal_customshape import customShape_yd, timedPairList_yd, CustomShape
 from signal_sum import SignalSum
 from helpers import accordMajeur, accordMineur, getSemiToneFreq, harmonics
 import math
 from plot import plotsignal
+from random import random
 
-def example_simple():
-    o2 = Oscillator(Const.PULSE, 440.0)
-    o2.setname("pulse 440")
-    return Track().appendSignal(o2, .0, 5.0, .8).amplify(.5)
+def example_sin440():
+    o440 = Oscillator(Const.SIN, 440.0)
+    return Track([TrackElement(o440,0,10)], 0, 10, .1,"sintrack")
+
+def example_pulse440():
+    o2 = Oscillator(Const.PULSE, 440.0, width=.5, name="pulse 440")
+    return Track().appendSignal(o2, .0, 5.0, .8).set(Const.AMPL,.5)
 
 def example_majeurmineur():
-    lfoa = customShape_yd([.0, .8, .4, .4, .0], .5).amplify(1 / 1.3)
+    lfoa = customShape_yd([.0, .8, .4, .4, .0], .5).set(Const.AMPL, 1 / 1.3)
     envshape = timedPairList_yd([.0, .8, .4, .4, .0], .5)
     lfoa2 = CustomShape(.5, 1/1.3, envshape)
     tmajeur = accordMajeur(440.0)
@@ -23,7 +26,7 @@ def example_majeurmineur():
     return Track().appendSignal(tmajeur, .0, 5, TimedFloat(.8, lfoa)).appendSignal(tmineur, .0, 5.0, TimedFloat(.8, lfoa2))
 
 def example_enveloppe():
-    lfoa = customShape_xy([(.0, .0), (.1, .8), (.1, .5), (.2, .0), (.1, .0)]) #x is relative
+    lfoa = CustomShape(points=[(.0, .0), (.1, .8), (.1, .5), (.2, .0), (.1, .0)])
     o2 = Oscillator(Const.SIN, 440.0, 0, TimedFloat(.8, lfoa))
     return Track().appendSignal(o2, .0, 5.0, 1.0)
 
@@ -33,37 +36,39 @@ def example_harmonicsTuning(baseFreq, nharmonics):
     tuningDuration = 10.0 #seconds
     stableDuration = 10.0 #seconds
     for i in range(1, nharmonics):
-        f2pi = math.Pow(2, float(i))
+        f2pi = math.pow(2, float(i))
         n1Freq = baseFreq * f2pi
         n2Freq = getSemiToneFreq(n1Freq, 4)
         n3Freq = getSemiToneFreq(n1Freq, 7)
         #print("    harmonicsTuning:n1Freq:%v    ,n2Freq:%v    ,n3Freq:%v\n" % n1Freq, n2Freq, n3Freq)
-        outOfTuneStart = (2.0*random.random() - 1.0) * outOfTuneMax #+-outOfTuneMax
-        tuningLfof = customShape_xy([(.0, 1.0 + outOfTuneStart), (tuningDuration, 1.0), (stableDuration, 1.0)]).setName("tuningLfof")
+        outOfTuneStart = (2.0 * random() - 1.0) * outOfTuneMax #+-outOfTuneMax
+        tuningLfof = CustomShape(points=[(.0, 1.0 + outOfTuneStart), (tuningDuration, 1.0), (stableDuration, 1.0)]).setName("tuningLfof")
         plotsignal(tuningLfof, f"tuningLfof_{i}", 2*int(tuningDuration+stableDuration), 4410)
         plotsignal(TimedFloat(n1Freq, tuningLfof), f"timedFloat_n1Freq_{i}", 2*int(tuningDuration+stableDuration), 4410)
-
         #print("tuningLfof.getperiod(.0):%v\n" % tuningLfof.getperiod(.0))
         accAmp = TimedFloat(1.0 / f2pi / 3)
         sum = sum. \
             appendSignal(Oscillator(Const.SIN, TimedFloat(n1Freq, tuningLfof), .0, accAmp)).\
             appendSignal(Oscillator(Const.SIN, TimedFloat(n2Freq, tuningLfof), .0, accAmp)).\
             appendSignal(Oscillator(Const.SIN, TimedFloat(n3Freq, tuningLfof), .0, accAmp))
-    return sum.amplify(TimedFloat(.8))
+    return sum.set(Const.AMPL ,.8)
 
 
 def example_drums():
-    #var oHighKicks = oscillator_noise(customShape_xy([]xyPair{{.0, .0}, {.1, .8}, {.1, .1}, {.8, .0}}))
-    tOscs = Track().\
+    #var oHighKicks = oscillator_noise(CustomShape(points=[]xyPair{{.0, .0}, {.1, .8}, {.1, .1}, {.8, .0}}))
+    tOscs = Track(name="SINSINNOISE").\
         appendSignal(Oscillator(Const.SIN, 55, 0, .7), .0, 5.0, 1.0).\
         appendSignal(Oscillator(Const.SIN, 110, .5, .6), .0, 5.0, 1.).\
-        appendSignal(Oscillator(Const.NOISE,0, 0,.1), .0, 5.0, .08)
-    fslope = customShape_yd([1.0, .1], 2.0)                                                          #length of the last part of the enveloppe
+        appendSignal(Oscillator(Const.NOISE,1, 0,.1), .0, 5.0, .08)
+    print(tOscs)
+    fslope = customShape_yd([1.0, .1], 2.0)   #length of the last part of the enveloppe
     enveloppe = [[.0, .0], [.2, .8], [.1, .6], [.1, .1], (TimedFloat(.6, fslope), .0)] #Envelope of the hit
     ampl = TimedFloat(.8, CustomShape(0,1, enveloppe))
-    return Track().appendSignal(tOscs, .0, 5.0, ampl)
-
-
+    drums = Track(name="DRUM+ENV")
+    print(drums)
+    drums.appendSignal(tOscs, .0, 5.0, ampl)
+    print(drums)
+    return drums
 
 def example_combined1():
     #intro
@@ -90,7 +95,6 @@ def example_engine():
     enveloppe1 = [[.0, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence] #Envelope of the hit 1
     cs1 = CustomShape(0,1, enveloppe1)
     ampl1 = TimedFloat(.8, cs1) #global enveloppe uses the hit enveloppe, but with a viariable repetition frequency
-    #print("    example_engine:cs1.getperiod(.0):%v\n" % cs1.getperiod(.0))
 
     piston2 = harmonics(70, nbh)                                                                                                                                                     #.appendSignal(oscillator_noise(TimedFloat(.5)))
     enveloppe2 = [otherPistonHit, variableSilence, [.0, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence] #Envelope of the hit 1

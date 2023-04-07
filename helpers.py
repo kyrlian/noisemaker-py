@@ -23,16 +23,15 @@ toneConst = root(2.0, 7)  # 1,104089513673812
 
 
 def getSemiToneFreq(fstart, nsemitones):
-    nfreq = fstart * math.Pow(semiToneConst, float(nsemitones))
+    nfreq = fstart * math.pow(semiToneConst, float(nsemitones))
     return nfreq
 
 
 def accord3(baseFreq, gap1, gap2):  # 3,4
     return SignalSum(). \
-        appendSignal(Oscillator(Const.SIN, baseFreq).amplify(.7)). \
-        appendSignal(Oscillator(Const.SIN, getSemiToneFreq(baseFreq, gap1)).amplify(.6)). \
-        appendSignal(Oscillator(Const.SIN, getSemiToneFreq(
-            baseFreq, gap1+gap2)).amplify(.5))
+        appendSignal(Oscillator(Const.SIN, baseFreq, ampl=.7)). \
+        appendSignal(Oscillator(Const.SIN, getSemiToneFreq(baseFreq, gap1),ampl=.6)). \
+        appendSignal(Oscillator(Const.SIN, getSemiToneFreq(baseFreq, gap1+gap2),ampl=.5))
 
 
 def accordMineur(fstart):
@@ -44,8 +43,7 @@ def accordMajeur(fstart):
 
 
 def harmonics(baseFreq, nharmonics):
-    sum = SignalSum(f"harmonics {nharmonics}")
-    # for i = 1; i <= nharmonics; i += 1:
+    sum = SignalSum(name=f"harmonics {nharmonics}")
     for i in range(1, nharmonics):
         f2pi = math.pow(2, float(i))
         sum = sum.appendSignal(Oscillator(
