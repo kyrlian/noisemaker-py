@@ -14,6 +14,11 @@ def example_sin440():
     o440 = Oscillator(Const.SIN, 440.0)
     return Track([TrackElement(o440, 0, 10)], 0, 10, .1, "sintrack")
 
+def example_gotobass():
+    d = 10
+    o440to0 = Oscillator(Const.SIN, customShape_yd([440, 1], d))
+    return Track(name="bass").appendSignal(o440to0, 0, d, .8)
+
 
 def example_pulse440():
     o2 = Oscillator(Const.PULSE, 440.0, width=.5, name="pulse 440")
@@ -107,12 +112,12 @@ def example_engine():
     tduration = 30.0
     nbh = 3
     # variable factor of the length of the silence
-    variableSilence = [TimedFloat(1.0, customShape_yd([1.0, .01], tduration)), TimedFloat(.0)]
+    variableSilence = [TimedFloat(1.0, customShape_yd([.05, .01 ,.001], tduration)), .0]
     otherPistonHit = [.2, .0]
 
     # .appendSignal(oscillator_noise(TimedFloat(.6)))
     piston1 = harmonics(75, nbh)
-    enveloppe1 = [[.0, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
+    enveloppe1 = [[.01, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
     cs1 = CustomShape(0, 1, enveloppe1)
     # global enveloppe uses the hit enveloppe, but with a viariable repetition frequency
     ampl1 = TimedFloat(.8, cs1)
@@ -121,21 +126,22 @@ def example_engine():
 
     # .appendSignal(oscillator_noise(TimedFloat(.5)))
     piston2 = harmonics(70, nbh)
-    enveloppe2 = [otherPistonHit, variableSilence, [.0, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
+#    enveloppe2 = [otherPistonHit, variableSilence, [.0, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
+    enveloppe2 = [otherPistonHit, variableSilence, [.01, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
     ampl2 = TimedFloat(.8, CustomShape(0, 1, enveloppe2))
     piston2.set(Const.AMPL, ampl2)
     print(piston2)
 
     # .appendSignal(oscillator_noise(TimedFloat(.4)))
     piston3 = harmonics(65, nbh)
-    enveloppe3 = [otherPistonHit, variableSilence, otherPistonHit, variableSilence, [.0, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
+    enveloppe3 = [otherPistonHit, variableSilence, otherPistonHit, variableSilence, [.01, .0], [.1, .8], [.1, .0], variableSilence, otherPistonHit, variableSilence]  # Envelope of the hit 1
     ampl3 = TimedFloat(.8, CustomShape(0, 1, enveloppe3))
     piston3.set(Const.AMPL, ampl3)
     print(piston3)
 
     # .appendSignal(oscillator_noise(TimedFloat(.3)))
     piston4 = harmonics(60, nbh)
-    enveloppe4 = [otherPistonHit, variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence, [.0, .0], [.1, .8], [.1, .0], variableSilence]  # Envelope of the hit 1
+    enveloppe4 = [otherPistonHit, variableSilence, otherPistonHit, variableSilence, otherPistonHit, variableSilence, [.01, .0], [.1, .8], [.1, .0], variableSilence]  # Envelope of the hit 1
     ampl4 = TimedFloat(.8, CustomShape(0, 1, enveloppe4))
     piston4.set(Const.AMPL, ampl4)
     print(piston4)

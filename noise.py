@@ -16,7 +16,8 @@ print("Preparing track")
 #tr = examples.example_harmonicsTuning(440, 5) #TODO review plots
 #tr = examples.example_drums()
 #tr = examples.example_combined1()
-tr = examples.example_engine()
+#tr = examples.example_engine()
+tr = examples.example_gotobass()
 
 p = Player()
 p.play(tr)
